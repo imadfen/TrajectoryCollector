@@ -3,13 +3,21 @@
 #include "veins/modules/application/ieee80211p/DemoBaseApplLayer.h"
 #include "veins/modules/mobility/traci/TraCIMobility.h"
 #include "veins/modules/messages/DemoSafetyMessage_m.h"
+#include "TrajSafetyMessage_m.h" // Import our generated message
 
 using namespace veins;
 
 struct NeighborData {
+    long id;
     Coord pos;
     Coord speed;
+    double heading;
     simtime_t lastSeen;
+    unsigned long lastSeqNum;
+    int totalPacketsLost;
+    int totalPacketsReceived;
+    double lastDelay;
+    double distToSender;
 };
 
 class DataCollectorApp : public DemoBaseApplLayer {
@@ -21,8 +29,17 @@ protected:
     virtual void onWSM(BaseFrame1609_4* frame) override;
     virtual void handlePositionUpdate(cObject* obj) override;
 
+    // Timer handling
+    virtual void handleSelfMsg(cMessage* msg) override;
+
     std::ofstream csvFile;
     double lastSpeed;
-    simtime_t lastSpeedTime;
+    double lastHeading;
+    simtime_t lastStepTime;
+
+    // Beaconing Logic
+    cMessage* sendBeaconEvt;
+    unsigned long mySequenceNumber;
+
     std::map<long, NeighborData> neighborTable;
 };
