@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by nedtool 5.6 from trajectories/TrajSafetyMessage.msg.
+// Generated file, do not edit! Created by nedtool 5.6 from src/trajectories/TrajSafetyMessage.msg.
 //
 
 #ifndef __VEINS_TRAJSAFETYMESSAGE_M_H
@@ -24,7 +24,7 @@
 namespace veins {
 
 /**
- * Class generated from <tt>trajectories/TrajSafetyMessage.msg:13</tt> by nedtool.
+ * Class generated from <tt>src/trajectories/TrajSafetyMessage.msg:13</tt> by nedtool.
  * <pre>
  * // 4. Define the Packet
  * packet TrajSafetyMessage extends DemoSafetyMessage
