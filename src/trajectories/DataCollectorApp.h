@@ -28,6 +28,7 @@ public:
 protected:
     virtual void onWSM(BaseFrame1609_4* frame) override;
     virtual void handlePositionUpdate(cObject* obj) override;
+    virtual void handleLowerMsg(cMessage* msg) override;
 
     // Timer handling
     virtual void handleSelfMsg(cMessage* msg) override;
