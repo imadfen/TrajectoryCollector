@@ -1,0 +1,30 @@
+<configuration>
+    <input>
+        <net-file value="myMap.net.xml"/>
+
+        <route-files value="
+            most.commercial.rou.xml,
+            most.pedestrian.rou.xml,
+            most.special.rou.xml,
+            most.buses.flows.xml,
+            most.highway.flows.xml,
+            most.trains.flows.xml"/>
+
+        <additional-files value="
+            basic.vType.xml,
+            most.poly.xml,
+            most.busstops.add.xml,
+            most.trainstops.add.xml,
+            most.parking.add.xml"/>
+    </input>
+
+    <time>
+        <begin value="17000"/>
+        <end value="72000"/>
+    </time>
+
+    <report>
+        <verbose value="true"/>
+        <no-step-log value="true"/>
+    </report>
+</configuration>

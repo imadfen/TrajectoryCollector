@@ -33,6 +33,27 @@ This project simulates a realistic traffic scenario where vehicles:
 
 ```
 TrajectoryCollector/
+├── custom-scripts/               # Utility scripts
+│   ├── processData.py            # Post-processing script
+│   └── sumo-launchd.py           # SUMO launcher wrapper
+│
+├── docs/                         # Documentation
+│   └── DATASET_DESCRIPTION.md    # Dataset documentation
+│
+├── results/                      # Simulation outputs
+│   ├── raw/                      # CSV trajectory data
+│   │   └── data_car_*.csv        # Per-vehicle trajectory files (97 files)
+│   ├── vectors/                  # OMNeT++ vector files (empty)
+│   ├── General-#0.sca            # Scalar results
+│   ├── General-#0.vci            # Vector index
+│   └── General-#0.vec            # Vector results
+│
+├── simulations/                  # Simulation launch scripts
+│   ├── antenna.xml               # Antenna characteristics
+│   ├── config.xml                # PHY layer configuration
+│   ├── package.ned               # Network package definition
+│   └── run                       # Execution script
+│
 ├── src/                          # Source code
 │   ├── trajectories/
 │   │   ├── DataCollectorApp.cc    # Main application logic
@@ -44,36 +65,27 @@ TrajectoryCollector/
 │   ├── Makefile                   # Build configuration
 │   └── TrajectoryCollector        # Compiled binary
 │
-├── simulations/                  # Simulation configuration
-│   ├── omnetpp.ini               # Simulation parameters
-│   ├── package.ned               # Network package definition
-│   └── run                       # Execution script
-│
-├── results/                      # Simulation outputs
-│   ├── data_car_*.csv            # Per-vehicle trajectory data
-│   ├── General-#0.sca            # Scalar results
-│   ├── General-#0.vci            # Vector index
-│   └── General-#0.vec            # Vector results
-│
-├── SUMO Configuration Files
-│   ├── mySumoConfig.sumocfg      # Main SUMO config
+├── sumo/                         # All SUMO traffic simulation files
+│   ├── basic.vType.xml           # Vehicle type definitions
+│   ├── most.buses.flows.xml      # Bus traffic flows
+│   ├── most.busstops.add.xml     # Bus stop infrastructure
+│   ├── most.commercial.rou.xml   # Commercial vehicle routes
+│   ├── most.highway.flows.xml    # Highway traffic flows
+│   ├── most.parking.add.xml      # Parking infrastructure
+│   ├── most.parking.allvisible.add.xml
+│   ├── most.parking.norerouters.add.xml
+│   ├── most.pedestrian.rou.xml   # Pedestrian routes
+│   ├── most.poly.xml             # Polygons and visual elements
+│   ├── most.special.rou.xml      # Special vehicle routes
+│   ├── most.trains.flows.xml     # Train traffic flows
+│   ├── most.trainstops.add.xml   # Train stop infrastructure
 │   ├── myMap.net.xml             # Road network definition
-│   ├── most.*.rou.xml            # Vehicle routes (commercial, pedestrian, special)
-│   ├── most.*.flows.xml          # Traffic flows (buses, highway, trains)
-│   ├── most.*.add.xml            # Additional infrastructure (stops, parking)
-│   └── most.poly.xml             # Polygons and visual elements
-│
-├── OMNeT++ Configuration Files
-│   ├── omnetpp.ini               # Main simulation config
-│   ├── config.xml                # PHY layer configuration
-│   ├── antenna.xml               # Antenna characteristics
+│   ├── mySumoConfig.sumocfg      # Main SUMO configuration
 │   └── traci.launch.xml          # SUMO-OMNeT++ coupling config
 │
-├── Vehicle Type Configuration
-│   └── basic.vType.xml           # Vehicle type definitions
-│
 ├── Makefile                      # Top-level build
-└── processData.py                # Post-processing script
+├── omnetpp.ini                   # Main simulation configuration
+└── README.md                     # This file
 ```
 
 ## ⚙️ How It Works
