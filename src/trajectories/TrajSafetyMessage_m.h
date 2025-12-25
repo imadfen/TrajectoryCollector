@@ -30,6 +30,7 @@ namespace veins {
  * packet TrajSafetyMessage extends DemoSafetyMessage
  * {
  *     unsigned long sequenceNumber;
+ *     int senderId;
  * }
  * </pre>
  */
@@ -37,6 +38,7 @@ class TrajSafetyMessage : public ::veins::DemoSafetyMessage
 {
   protected:
     unsigned long sequenceNumber;
+    int senderId;
 
   private:
     void copy(const TrajSafetyMessage& other);
@@ -57,6 +59,8 @@ class TrajSafetyMessage : public ::veins::DemoSafetyMessage
     // field getter/setter methods
     virtual unsigned long getSequenceNumber() const;
     virtual void setSequenceNumber(unsigned long sequenceNumber);
+    virtual int getSenderId() const;
+    virtual void setSenderId(int senderId);
 };
 
 inline void doParsimPacking(omnetpp::cCommBuffer *b, const TrajSafetyMessage& obj) {obj.parsimPack(b);}

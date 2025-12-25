@@ -40,7 +40,9 @@ void DataCollectorApp::handleSelfMsg(cMessage* msg) {
         veins::TrajSafetyMessage* wsm = new veins::TrajSafetyMessage();
         EV << "[DEBUG] Created message type: " << wsm->getClassName() << endl;
 
+        populateWSM(wsm);
         
+        wsm->setSenderId(myId);
         wsm->setChannelNumber(static_cast<int>(Channel::cch));
         wsm->setRecipientAddress(LAddress::L2BROADCAST());
         wsm->setUserPriority(7);
@@ -113,7 +115,7 @@ void DataCollectorApp::onWSM(BaseFrame1609_4* frame) {
     EV << "   -> It IS a TrajSafetyMessage. Processing..." << endl;
 
     
-    long senderId = wsm->getSenderModuleId();
+    long senderId = wsm->getSenderId();
     Coord senderPos = wsm->getSenderPos();
     Coord senderSpeed = wsm->getSenderSpeed();
     unsigned long seqNum = wsm->getSequenceNumber();

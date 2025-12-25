@@ -12,4 +12,5 @@ class DemoSafetyMessage;
 // 4. Define the Packet
 packet TrajSafetyMessage extends DemoSafetyMessage {
     unsigned long sequenceNumber;
+    int senderId;
 }

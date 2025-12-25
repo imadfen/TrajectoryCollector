@@ -183,6 +183,7 @@ Register_Class(TrajSafetyMessage)
 TrajSafetyMessage::TrajSafetyMessage(const char *name, short kind) : ::veins::DemoSafetyMessage(name,kind)
 {
     this->sequenceNumber = 0;
+    this->senderId = 0;
 }
 
 TrajSafetyMessage::TrajSafetyMessage(const TrajSafetyMessage& other) : ::veins::DemoSafetyMessage(other)
@@ -205,18 +206,21 @@ TrajSafetyMessage& TrajSafetyMessage::operator=(const TrajSafetyMessage& other)
 void TrajSafetyMessage::copy(const TrajSafetyMessage& other)
 {
     this->sequenceNumber = other.sequenceNumber;
+    this->senderId = other.senderId;
 }
 
 void TrajSafetyMessage::parsimPack(omnetpp::cCommBuffer *b) const
 {
     ::veins::DemoSafetyMessage::parsimPack(b);
     doParsimPacking(b,this->sequenceNumber);
+    doParsimPacking(b,this->senderId);
 }
 
 void TrajSafetyMessage::parsimUnpack(omnetpp::cCommBuffer *b)
 {
     ::veins::DemoSafetyMessage::parsimUnpack(b);
     doParsimUnpacking(b,this->sequenceNumber);
+    doParsimUnpacking(b,this->senderId);
 }
 
 unsigned long TrajSafetyMessage::getSequenceNumber() const
@@ -227,6 +231,16 @@ unsigned long TrajSafetyMessage::getSequenceNumber() const
 void TrajSafetyMessage::setSequenceNumber(unsigned long sequenceNumber)
 {
     this->sequenceNumber = sequenceNumber;
+}
+
+int TrajSafetyMessage::getSenderId() const
+{
+    return this->senderId;
+}
+
+void TrajSafetyMessage::setSenderId(int senderId)
+{
+    this->senderId = senderId;
 }
 
 class TrajSafetyMessageDescriptor : public omnetpp::cClassDescriptor
@@ -294,7 +308,7 @@ const char *TrajSafetyMessageDescriptor::getProperty(const char *propertyname) c
 int TrajSafetyMessageDescriptor::getFieldCount() const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 1+basedesc->getFieldCount() : 1;
+    return basedesc ? 2+basedesc->getFieldCount() : 2;
 }
 
 unsigned int TrajSafetyMessageDescriptor::getFieldTypeFlags(int field) const
@@ -307,8 +321,9 @@ unsigned int TrajSafetyMessageDescriptor::getFieldTypeFlags(int field) const
     }
     static unsigned int fieldTypeFlags[] = {
         FD_ISEDITABLE,
+        FD_ISEDITABLE,
     };
-    return (field>=0 && field<1) ? fieldTypeFlags[field] : 0;
+    return (field>=0 && field<2) ? fieldTypeFlags[field] : 0;
 }
 
 const char *TrajSafetyMessageDescriptor::getFieldName(int field) const
@@ -321,8 +336,9 @@ const char *TrajSafetyMessageDescriptor::getFieldName(int field) const
     }
     static const char *fieldNames[] = {
         "sequenceNumber",
+        "senderId",
     };
-    return (field>=0 && field<1) ? fieldNames[field] : nullptr;
+    return (field>=0 && field<2) ? fieldNames[field] : nullptr;
 }
 
 int TrajSafetyMessageDescriptor::findField(const char *fieldName) const
@@ -330,6 +346,7 @@ int TrajSafetyMessageDescriptor::findField(const char *fieldName) const
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
     int base = basedesc ? basedesc->getFieldCount() : 0;
     if (fieldName[0]=='s' && strcmp(fieldName, "sequenceNumber")==0) return base+0;
+    if (fieldName[0]=='s' && strcmp(fieldName, "senderId")==0) return base+1;
     return basedesc ? basedesc->findField(fieldName) : -1;
 }
 
@@ -343,8 +360,9 @@ const char *TrajSafetyMessageDescriptor::getFieldTypeString(int field) const
     }
     static const char *fieldTypeStrings[] = {
         "unsigned long",
+        "int",
     };
-    return (field>=0 && field<1) ? fieldTypeStrings[field] : nullptr;
+    return (field>=0 && field<2) ? fieldTypeStrings[field] : nullptr;
 }
 
 const char **TrajSafetyMessageDescriptor::getFieldPropertyNames(int field) const
@@ -412,6 +430,7 @@ std::string TrajSafetyMessageDescriptor::getFieldValueAsString(void *object, int
     TrajSafetyMessage *pp = (TrajSafetyMessage *)object; (void)pp;
     switch (field) {
         case 0: return ulong2string(pp->getSequenceNumber());
+        case 1: return long2string(pp->getSenderId());
         default: return "";
     }
 }
@@ -427,6 +446,7 @@ bool TrajSafetyMessageDescriptor::setFieldValueAsString(void *object, int field,
     TrajSafetyMessage *pp = (TrajSafetyMessage *)object; (void)pp;
     switch (field) {
         case 0: pp->setSequenceNumber(string2ulong(value)); return true;
+        case 1: pp->setSenderId(string2long(value)); return true;
         default: return false;
     }
 }
