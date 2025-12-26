@@ -18,7 +18,7 @@ void DataCollectorApp::initialize(int stage) {
         
         
         int myIndex = getParentModule()->getIndex();
-        std::string filename = "results/raw/data_car_" + std::to_string(myIndex) +
+        std::string filename = "results/data_car_" + std::to_string(myIndex) +
                                "_t" + std::to_string((int)simTime().dbl()) + ".csv";
 
         csvFile.open(filename);
