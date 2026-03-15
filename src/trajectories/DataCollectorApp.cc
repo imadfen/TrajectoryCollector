@@ -1,5 +1,6 @@
 #include "DataCollectorApp.h"
 #include <iomanip> 
+#include <sys/stat.h>
 
 Define_Module(DataCollectorApp);
 
@@ -18,7 +19,9 @@ void DataCollectorApp::initialize(int stage) {
         
         
         int myIndex = getParentModule()->getIndex();
-        std::string filename = "results/data_car_" + std::to_string(myIndex) +
+        mkdir("results", 0777);      
+        mkdir("results/raw", 0777);
+        std::string filename = "results/raw/data_car_" + std::to_string(myIndex) +
                                "_t" + std::to_string((int)simTime().dbl()) + ".csv";
 
         csvFile.open(filename);

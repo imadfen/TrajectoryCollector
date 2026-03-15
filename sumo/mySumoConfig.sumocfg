@@ -21,7 +21,12 @@
     <time>
         <begin value="17000"/>
         <end value="72000"/>
+        <step-length value="0.1"/>
     </time>
+
+    <processing>
+        <max-num-vehicles value="300"/>
+    </processing>
 
     <report>
         <verbose value="true"/>
