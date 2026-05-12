@@ -18,6 +18,7 @@ struct NeighborData {
     int totalPacketsReceived;
     double lastDelay;
     double distToSender;
+    bool initialized = false; 
 };
 
 class DataCollectorApp : public DemoBaseApplLayer {
@@ -40,6 +41,7 @@ protected:
 
     // Beaconing Logic
     cMessage* sendBeaconEvt;
+    double beaconIntervalVal;   // read from NED beaconInterval parameter
     unsigned long mySequenceNumber;
 
     std::map<long, NeighborData> neighborTable;

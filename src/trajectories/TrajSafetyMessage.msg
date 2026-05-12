@@ -13,4 +13,5 @@ class DemoSafetyMessage;
 packet TrajSafetyMessage extends DemoSafetyMessage {
     unsigned long sequenceNumber;
     int senderId;
+    simtime_t generationTime;
 }

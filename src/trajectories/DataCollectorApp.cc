@@ -11,6 +11,7 @@ void DataCollectorApp::initialize(int stage) {
         lastHeading = 0;
         lastStepTime = 0;
         mySequenceNumber = 0;
+        beaconIntervalVal = par("beaconInterval").doubleValue();
 
         
         sendBeaconEvt = new cMessage("sendBeacon");
@@ -26,14 +27,12 @@ void DataCollectorApp::initialize(int stage) {
 
         csvFile.open(filename);
 
-        
         csvFile << "Time,X,Y,Speed,Acceleration,Heading,AngularVelocity,"
-                << "LaneID,LaneDist,"
-                << "Neigh1_Rx,Neigh1_Ry,Neigh1_RSpeed,Neigh1_RHeading,"
-                << "Neigh2_Rx,Neigh2_Ry,Neigh2_RSpeed,Neigh2_RHeading,"
-                << "Neigh3_Rx,Neigh3_Ry,Neigh3_RSpeed,Neigh3_RHeading,"
-                << "AvgDistToSender,AvgMsgDelay,PacketLossRate"
-                << std::endl;
+                << "LaneID,LaneDist,";
+        for (int i = 1; i <= 10; ++i) {
+            csvFile << "Neigh" << i << "_Rx,Neigh" << i << "_Ry,Neigh" << i << "_RSpeed,Neigh" << i << "_RHeading,";
+        }
+        csvFile << "AvgDistToSender,AvgMsgDelay,PacketLossRate" << std::endl;
     }
 }
 
@@ -49,7 +48,7 @@ void DataCollectorApp::handleSelfMsg(cMessage* msg) {
         wsm->setChannelNumber(static_cast<int>(Channel::cch));
         wsm->setRecipientAddress(LAddress::L2BROADCAST());
         wsm->setUserPriority(7);
-        wsm->setBitLength(256);
+        wsm->setBitLength(8000);  // Stress-test v2: max realistic BSM (IEEE 1609.2 full cert ~1000 bytes)
         wsm->setSequenceNumber(mySequenceNumber++);
 
         
@@ -60,8 +59,9 @@ void DataCollectorApp::handleSelfMsg(cMessage* msg) {
 
         
         EV << " [APP] Car " << myId << " sending beacon (Seq " << mySequenceNumber << ")" << endl;
+        wsm->setGenerationTime(simTime());
         sendDown(wsm);
-        scheduleAt(simTime() + 1.0, sendBeaconEvt);
+        scheduleAt(simTime() + beaconIntervalVal, sendBeaconEvt);
     } else {
         DemoBaseApplLayer::handleSelfMsg(msg);
     }
@@ -133,27 +133,25 @@ void DataCollectorApp::onWSM(BaseFrame1609_4* frame) {
     double distance = sqrt(dx*dx + dy*dy);
     
     
-    simtime_t delay = simTime() - wsm->getTimestamp();
+    simtime_t delay = simTime() - wsm->getGenerationTime();
     
     
     NeighborData& neighbor = neighborTable[senderId];
     
     
-    if (neighbor.lastSeqNum > 0 && seqNum > neighbor.lastSeqNum + 1) {
-        
-        int lost = seqNum - neighbor.lastSeqNum - 1;
-        neighbor.totalPacketsLost += lost;
-        EV << "   [PACKET LOSS] Expected seq " << (neighbor.lastSeqNum + 1) 
-           << " but got " << seqNum << " (" << lost << " packets lost)" << endl;
+    if (neighbor.initialized && seqNum > neighbor.lastSeqNum + 1) {
+    int lost = seqNum - neighbor.lastSeqNum - 1;
+    neighbor.totalPacketsLost += lost;
+    EV << "   [PACKET LOSS] Expected seq " << (neighbor.lastSeqNum + 1) 
+       << " but got " << seqNum << " (" << lost << " packets lost)" << endl;
     }
-    
-    
+    neighbor.initialized = true;
+    neighbor.lastSeqNum = seqNum;
     neighbor.id = senderId;
     neighbor.pos = senderPos;
     neighbor.speed = senderSpeed;
     neighbor.heading = atan2(senderSpeed.y, senderSpeed.x); 
     neighbor.lastSeen = simTime();
-    neighbor.lastSeqNum = seqNum;
     neighbor.totalPacketsReceived++;
     neighbor.lastDelay = delay.dbl();
     neighbor.distToSender = distance;
@@ -200,7 +198,7 @@ void DataCollectorApp::handlePositionUpdate(cObject* obj) {
 
     for (auto it = neighborTable.begin(); it != neighborTable.end(); ) {
         
-        if (simTime() - it->second.lastSeen > 5.0) {
+        if (simTime() - it->second.lastSeen > 1.0) {
             neighborTable.erase(it++);
         } else {
             double dx = it->second.pos.x - pos.x;
@@ -241,7 +239,7 @@ void DataCollectorApp::handlePositionUpdate(cObject* obj) {
             << speed << "," << accel << "," << heading << "," << angularVelocity << ",";
     csvFile << "\"" << laneId << "\"," << laneDist << ",";
 
-    for(int i=0; i<3; i++) {
+    for(int i=0; i<10; i++) {
         if(i < (int)sorted.size()) {
             NeighborData& n = neighborTable[sorted[i].id];
             double relX = n.pos.x - pos.x;

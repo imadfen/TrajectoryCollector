@@ -31,6 +31,7 @@ namespace veins {
  * {
  *     unsigned long sequenceNumber;
  *     int senderId;
+ *     simtime_t generationTime;
  * }
  * </pre>
  */
@@ -39,6 +40,7 @@ class TrajSafetyMessage : public ::veins::DemoSafetyMessage
   protected:
     unsigned long sequenceNumber;
     int senderId;
+    ::omnetpp::simtime_t generationTime;
 
   private:
     void copy(const TrajSafetyMessage& other);
@@ -61,6 +63,8 @@ class TrajSafetyMessage : public ::veins::DemoSafetyMessage
     virtual void setSequenceNumber(unsigned long sequenceNumber);
     virtual int getSenderId() const;
     virtual void setSenderId(int senderId);
+    virtual ::omnetpp::simtime_t getGenerationTime() const;
+    virtual void setGenerationTime(::omnetpp::simtime_t generationTime);
 };
 
 inline void doParsimPacking(omnetpp::cCommBuffer *b, const TrajSafetyMessage& obj) {obj.parsimPack(b);}

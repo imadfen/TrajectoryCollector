@@ -184,6 +184,7 @@ TrajSafetyMessage::TrajSafetyMessage(const char *name, short kind) : ::veins::De
 {
     this->sequenceNumber = 0;
     this->senderId = 0;
+    this->generationTime = 0;
 }
 
 TrajSafetyMessage::TrajSafetyMessage(const TrajSafetyMessage& other) : ::veins::DemoSafetyMessage(other)
@@ -207,6 +208,7 @@ void TrajSafetyMessage::copy(const TrajSafetyMessage& other)
 {
     this->sequenceNumber = other.sequenceNumber;
     this->senderId = other.senderId;
+    this->generationTime = other.generationTime;
 }
 
 void TrajSafetyMessage::parsimPack(omnetpp::cCommBuffer *b) const
@@ -214,6 +216,7 @@ void TrajSafetyMessage::parsimPack(omnetpp::cCommBuffer *b) const
     ::veins::DemoSafetyMessage::parsimPack(b);
     doParsimPacking(b,this->sequenceNumber);
     doParsimPacking(b,this->senderId);
+    doParsimPacking(b,this->generationTime);
 }
 
 void TrajSafetyMessage::parsimUnpack(omnetpp::cCommBuffer *b)
@@ -221,6 +224,7 @@ void TrajSafetyMessage::parsimUnpack(omnetpp::cCommBuffer *b)
     ::veins::DemoSafetyMessage::parsimUnpack(b);
     doParsimUnpacking(b,this->sequenceNumber);
     doParsimUnpacking(b,this->senderId);
+    doParsimUnpacking(b,this->generationTime);
 }
 
 unsigned long TrajSafetyMessage::getSequenceNumber() const
@@ -241,6 +245,16 @@ int TrajSafetyMessage::getSenderId() const
 void TrajSafetyMessage::setSenderId(int senderId)
 {
     this->senderId = senderId;
+}
+
+::omnetpp::simtime_t TrajSafetyMessage::getGenerationTime() const
+{
+    return this->generationTime;
+}
+
+void TrajSafetyMessage::setGenerationTime(::omnetpp::simtime_t generationTime)
+{
+    this->generationTime = generationTime;
 }
 
 class TrajSafetyMessageDescriptor : public omnetpp::cClassDescriptor
@@ -308,7 +322,7 @@ const char *TrajSafetyMessageDescriptor::getProperty(const char *propertyname) c
 int TrajSafetyMessageDescriptor::getFieldCount() const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 2+basedesc->getFieldCount() : 2;
+    return basedesc ? 3+basedesc->getFieldCount() : 3;
 }
 
 unsigned int TrajSafetyMessageDescriptor::getFieldTypeFlags(int field) const
@@ -322,8 +336,9 @@ unsigned int TrajSafetyMessageDescriptor::getFieldTypeFlags(int field) const
     static unsigned int fieldTypeFlags[] = {
         FD_ISEDITABLE,
         FD_ISEDITABLE,
+        FD_ISEDITABLE,
     };
-    return (field>=0 && field<2) ? fieldTypeFlags[field] : 0;
+    return (field>=0 && field<3) ? fieldTypeFlags[field] : 0;
 }
 
 const char *TrajSafetyMessageDescriptor::getFieldName(int field) const
@@ -337,8 +352,9 @@ const char *TrajSafetyMessageDescriptor::getFieldName(int field) const
     static const char *fieldNames[] = {
         "sequenceNumber",
         "senderId",
+        "generationTime",
     };
-    return (field>=0 && field<2) ? fieldNames[field] : nullptr;
+    return (field>=0 && field<3) ? fieldNames[field] : nullptr;
 }
 
 int TrajSafetyMessageDescriptor::findField(const char *fieldName) const
@@ -347,6 +363,7 @@ int TrajSafetyMessageDescriptor::findField(const char *fieldName) const
     int base = basedesc ? basedesc->getFieldCount() : 0;
     if (fieldName[0]=='s' && strcmp(fieldName, "sequenceNumber")==0) return base+0;
     if (fieldName[0]=='s' && strcmp(fieldName, "senderId")==0) return base+1;
+    if (fieldName[0]=='g' && strcmp(fieldName, "generationTime")==0) return base+2;
     return basedesc ? basedesc->findField(fieldName) : -1;
 }
 
@@ -361,8 +378,9 @@ const char *TrajSafetyMessageDescriptor::getFieldTypeString(int field) const
     static const char *fieldTypeStrings[] = {
         "unsigned long",
         "int",
+        "simtime_t",
     };
-    return (field>=0 && field<2) ? fieldTypeStrings[field] : nullptr;
+    return (field>=0 && field<3) ? fieldTypeStrings[field] : nullptr;
 }
 
 const char **TrajSafetyMessageDescriptor::getFieldPropertyNames(int field) const
@@ -431,6 +449,7 @@ std::string TrajSafetyMessageDescriptor::getFieldValueAsString(void *object, int
     switch (field) {
         case 0: return ulong2string(pp->getSequenceNumber());
         case 1: return long2string(pp->getSenderId());
+        case 2: return simtime2string(pp->getGenerationTime());
         default: return "";
     }
 }
@@ -447,6 +466,7 @@ bool TrajSafetyMessageDescriptor::setFieldValueAsString(void *object, int field,
     switch (field) {
         case 0: pp->setSequenceNumber(string2ulong(value)); return true;
         case 1: pp->setSenderId(string2long(value)); return true;
+        case 2: pp->setGenerationTime(string2simtime(value)); return true;
         default: return false;
     }
 }
