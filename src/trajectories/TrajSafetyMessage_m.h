@@ -32,6 +32,9 @@ namespace veins {
  *     unsigned long sequenceNumber;
  *     int senderId;
  *     simtime_t generationTime;
+ *     bool isEmergency = false;
+ *     int originalSenderId;
+ *     unsigned long alertSeqNum;
  * }
  * </pre>
  */
@@ -41,6 +44,9 @@ class TrajSafetyMessage : public ::veins::DemoSafetyMessage
     unsigned long sequenceNumber;
     int senderId;
     ::omnetpp::simtime_t generationTime;
+    bool isEmergency;
+    int originalSenderId;
+    unsigned long alertSeqNum;
 
   private:
     void copy(const TrajSafetyMessage& other);
@@ -65,6 +71,12 @@ class TrajSafetyMessage : public ::veins::DemoSafetyMessage
     virtual void setSenderId(int senderId);
     virtual ::omnetpp::simtime_t getGenerationTime() const;
     virtual void setGenerationTime(::omnetpp::simtime_t generationTime);
+    virtual bool getIsEmergency() const;
+    virtual void setIsEmergency(bool isEmergency);
+    virtual int getOriginalSenderId() const;
+    virtual void setOriginalSenderId(int originalSenderId);
+    virtual unsigned long getAlertSeqNum() const;
+    virtual void setAlertSeqNum(unsigned long alertSeqNum);
 };
 
 inline void doParsimPacking(omnetpp::cCommBuffer *b, const TrajSafetyMessage& obj) {obj.parsimPack(b);}

@@ -12,3 +12,4 @@ Makefile
 
 # IDE Settings (Optional - usually better to share basic settings but ignore user specific)
 .settings/
+**.json

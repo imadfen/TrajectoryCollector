@@ -14,4 +14,7 @@ packet TrajSafetyMessage extends DemoSafetyMessage {
     unsigned long sequenceNumber;
     int senderId;
     simtime_t generationTime;
+    bool isEmergency = false;
+    int originalSenderId;
+    unsigned long alertSeqNum;
 }
