@@ -12,8 +12,4 @@ Makefile
 
 # IDE Settings (Optional - usually better to share basic settings but ignore user specific)
 .settings/
-.cproject
-.project
-# NOTE: If you exclude .project/.cproject, your colleague must "Import" as a new project.
-# If you INCLUDE them, they get your settings but might have path conflicts.
-# Recommendation: KEEP .project and .cproject but ensure paths inside are relative.
+**.json

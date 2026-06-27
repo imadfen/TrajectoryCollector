@@ -8,4 +8,6 @@ simple DataCollectorApp extends DemoBaseApplLayer
     parameters:
         @class(DataCollectorApp);
         @display("i=block/app");
+        // Path to the decisions.json file 
+        string decisionsFile = default("decisions.json");
 }
