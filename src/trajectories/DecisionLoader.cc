@@ -3,7 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
-#include <cstdlib>   // strtod
+#include <cstdlib>   
 
 // ---------------------------------------------------------------------------
 // Minimal, dependency-free JSON parser for the decisions.json format.
@@ -23,8 +23,7 @@
 
 namespace {
 
-// Extract the string inside the first pair of double-quotes on a line.
-// Returns "" if no quoted string is found.
+
 std::string extractQuotedString(const std::string& line) {
     std::size_t first = line.find('"');
     if (first == std::string::npos) return "";
@@ -33,8 +32,7 @@ std::string extractQuotedString(const std::string& line) {
     return line.substr(first + 1, second - first - 1);
 }
 
-// True if 's' looks like a numeric timestep key (digits, at most one dot,
-// no letters).
+
 bool isNumericKey(const std::string& s) {
     if (s.empty()) return false;
     bool hasDot = false;
@@ -49,8 +47,7 @@ bool isNumericKey(const std::string& s) {
     return true;
 }
 
-// Extract the numeric value after a colon on a line, e.g.  "beacon_hz": 2.0
-// Returns 0 on failure.
+
 double extractColonValue(const std::string& line) {
     std::size_t colon = line.rfind(':');
     if (colon == std::string::npos) return 0.0;
@@ -61,13 +58,12 @@ double extractColonValue(const std::string& line) {
     return v;
 }
 
-} // anonymous namespace
+} 
 
-// ---------------------------------------------------------------------------
 
 bool DecisionLoader::load(const std::string& path) {
     std::ifstream f(path);
-    if (!f.is_open()) return false;          // file not found → baseline mode
+    if (!f.is_open()) return false;         
 
     std::string currentVehicle;
     double      currentTimestep = -1.0;
@@ -129,23 +125,21 @@ bool DecisionLoader::load(const std::string& path) {
         }
     }
 
-    commitTimestep(); // flush the last entry
+    commitTimestep(); 
     loaded_ = !decisions_.empty();
     return loaded_;
 }
 
-// ---------------------------------------------------------------------------
-
 Decision DecisionLoader::lookup(const std::string& vehicleId, double t) const {
     auto vit = decisions_.find(vehicleId);
-    if (vit == decisions_.end()) return defaultDecision(); // unknown vehicle
+    if (vit == decisions_.end()) return defaultDecision();
 
     const auto& timeMap = vit->second;
     if (timeMap.empty()) return defaultDecision();
 
     // upper_bound(t) → first key strictly greater than t
     auto it = timeMap.upper_bound(t);
-    if (it == timeMap.begin()) return defaultDecision(); // t is before first entry
-    --it; // step back to the largest key <= t
+    if (it == timeMap.begin()) return defaultDecision(); 
+    --it; 
     return it->second;
 }

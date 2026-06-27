@@ -17,8 +17,8 @@ void DataCollectorApp::initialize(int stage) {
         beaconIntervalVal = par("beaconInterval").doubleValue();
 
         // ── Static Mode Decision Pipeline ────────────────────────────────────
-        // Try to load decisions.json (produced by the Python pipeline).
-        // If the file exists we enter Decision Mode; otherwise Baseline Mode.
+        // Try to load decisions.json 
+        // If the file exists we enter Decision Mode; otherwise Baseline Mode
         std::string decisionsPath = par("decisionsFile").stringValue();
         decisionModeActive = decisionLoader.load(decisionsPath);
         
@@ -44,7 +44,6 @@ void DataCollectorApp::initialize(int stage) {
         else
             EV << "[BaselineMode] No decisions file at '" << decisionsPath
                << "' — using flat " << (1.0/beaconIntervalVal) << " Hz beaconing" << endl;
-        // ─────────────────────────────────────────────────────────────────────
 
         sendBeaconEvt = new cMessage("sendBeacon");
         scheduleAt(simTime() + uniform(1.0, 60.0), sendBeaconEvt);
@@ -78,7 +77,7 @@ void DataCollectorApp::handleSelfMsg(cMessage* msg) {
         wsm->setChannelNumber(static_cast<int>(Channel::cch));
         wsm->setRecipientAddress(LAddress::L2BROADCAST());
         wsm->setUserPriority(7);
-        wsm->setBitLength(8000);  // Stress-test v2: max realistic BSM (IEEE 1609.2 full cert ~1000 bytes)
+        wsm->setBitLength(3000); 
         wsm->setSequenceNumber(mySequenceNumber++);
 
         
@@ -87,20 +86,16 @@ void DataCollectorApp::handleSelfMsg(cMessage* msg) {
         TraCIMobility* mobility = check_and_cast<TraCIMobility*>(getParentModule()->getSubmodule("veinsmobility"));
         wsm->setSenderPos(mobility->getPositionAt(simTime()));
 
-        // Default selective forwarding parameters:
+        // Default parameters for loop A (normal periodic beaconing):
         wsm->setIsEmergency(false);
         wsm->setOriginalSenderId(myId);
         wsm->setAlertSeqNum(wsm->getSequenceNumber());
 
-        // ── Static Mode Decision Pipeline: choose next beacon interval ───────
         double interval = beaconIntervalVal;
         if (decisionModeActive) {
             Decision d = decisionLoader.lookup(myVehicleId, simTime().dbl());
 
             if (d.found) {
-                // Loop A — Beacon rate driven by flag:
-                //   flag = 1  →  normal suppression OFF  → 10 Hz (0.1 s interval)
-                //   flag = 0  →  beacon suppressed        →  2 Hz (0.5 s interval)
                 interval = (d.flag == 1) ? 0.1 : 0.5;
 
                 EV << "[DecisionMode] " << myVehicleId
@@ -121,8 +116,6 @@ void DataCollectorApp::handleSelfMsg(cMessage* msg) {
         }
 
         scheduleAt(simTime() + interval, sendBeaconEvt);
-        // ─────────────────────────────────────────────────────────────────────
-
         EV << " [APP] Car " << myId << " sending periodic BSM (Seq " << wsm->getSequenceNumber() << ")" << endl;
         wsm->setGenerationTime(simTime());
         sendDown(wsm);
@@ -130,7 +123,7 @@ void DataCollectorApp::handleSelfMsg(cMessage* msg) {
     } else {
         std::string msgName = msg->getName();
         if (msgName.rfind("relay:", 0) == 0) {
-            // Loop B Selective Forwarding: parse origId and seqNum from "relay:origId:seqNum"
+            // Loop B : parse origId and seqNum from "relay:origId:seqNum"
             std::stringstream ss(msgName);
             std::string prefix, origIdStr, seqNumStr;
             std::getline(ss, prefix, ':');
@@ -146,7 +139,7 @@ void DataCollectorApp::handleSelfMsg(cMessage* msg) {
             wsm->setChannelNumber(static_cast<int>(Channel::cch));
             wsm->setRecipientAddress(LAddress::L2BROADCAST());
             wsm->setUserPriority(7);
-            wsm->setBitLength(8000);  // Same size as BSM
+            wsm->setBitLength(3000); 
             wsm->setSequenceNumber(mySequenceNumber++);
             wsm->setSenderSpeed(curSpeed);
             TraCIMobility* mobility = check_and_cast<TraCIMobility*>(getParentModule()->getSubmodule("veinsmobility"));
@@ -264,7 +257,7 @@ void DataCollectorApp::onWSM(BaseFrame1609_4* frame) {
        << " Received=" << neighbor.totalPacketsReceived
        << " Lost=" << neighbor.totalPacketsLost << endl;
 
-    // Loop B: Selective Forwarding emergency alert logic
+    // Loop B: emergency alert logic
     if (wsm->getIsEmergency()) {
         int origId = wsm->getOriginalSenderId();
         unsigned long alertSeq = wsm->getAlertSeqNum();
@@ -284,7 +277,7 @@ void DataCollectorApp::onWSM(BaseFrame1609_4* frame) {
                 if (receivedAlerts.count(alertKey) == 0) {
                     receivedAlerts.insert(alertKey);
 
-                    double macWait = 1.0; // Default wait is 1ms
+                    double macWait = 1.0;
                     if (decisionModeActive) {
                         Decision d = decisionLoader.lookup(myVehicleId, simTime().dbl());
                         if (d.found && d.mac_wait_ms > 0.0) {
@@ -424,7 +417,7 @@ void DataCollectorApp::triggerEmergencyAlert() {
     wsm->setChannelNumber(static_cast<int>(Channel::cch));
     wsm->setRecipientAddress(LAddress::L2BROADCAST());
     wsm->setUserPriority(7);
-    wsm->setBitLength(1000);  // Alerts can be smaller than BSMs
+    wsm->setBitLength(1000); 
     wsm->setSequenceNumber(alertSeq);
     wsm->setSenderSpeed(curSpeed);
     

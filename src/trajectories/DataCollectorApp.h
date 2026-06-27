@@ -3,8 +3,8 @@
 #include "veins/modules/application/ieee80211p/DemoBaseApplLayer.h"
 #include "veins/modules/mobility/traci/TraCIMobility.h"
 #include "veins/modules/messages/DemoSafetyMessage_m.h"
-#include "TrajSafetyMessage_m.h" // Import our generated message
-#include "DecisionLoader.h"         // Static Mode: AI decision lookup
+#include "TrajSafetyMessage_m.h" 
+#include "DecisionLoader.h"         
 #include <set>
 #include <utility>
 
@@ -47,17 +47,17 @@ protected:
 
     // Beaconing Logic
     cMessage* sendBeaconEvt;
-    double beaconIntervalVal;      // read from NED beaconInterval parameter
+    double beaconIntervalVal;      
     unsigned long mySequenceNumber;
 
     // Static Mode Decision Pipeline
-    DecisionLoader decisionLoader;  // loads decisions.json once at startup
-    bool decisionModeActive;        // true when a valid decisions.json was found
-    std::string myVehicleId;        // "car_<index>" — key into decisions.json
+    DecisionLoader decisionLoader;  
+    bool decisionModeActive;        
+    std::string myVehicleId;        
 
     std::map<long, NeighborData> neighborTable;
 
-    // Loop B: Selective Forwarding alert structures
+    // Loop B: alert structures
     std::set<std::pair<int, unsigned long>> receivedAlerts;
     std::map<std::pair<int, unsigned long>, cMessage*> scheduledRelays;
 };
